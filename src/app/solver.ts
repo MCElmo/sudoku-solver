@@ -44,8 +44,11 @@ export function solveBoard(board: TBoard, updateUI: (board: TBoard) => void): TB
 
         if (result == newBoard) {
             throw new Error("This bro tried to infinite loop");
+        }else {
+            console.log("WORKED")
+            updateUI(newBoard);
+            return newBoard
         }
-        updateUI(newBoard);
     }
 }
 
