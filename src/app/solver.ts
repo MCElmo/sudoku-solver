@@ -71,9 +71,9 @@ function getConstraintIndexes(i: number, j: number): [number, number][] {
   }
   // add indexes in square
   const minRowI = SQUARE_WIDTH * Math.floor(i / SQUARE_WIDTH);
-  const maxColI = SQUARE_WIDTH * Math.floor(j / SQUARE_WIDTH);
-  for (let i3 = 0; i3 < minRowI; i3++) {
-    for (let j3 = 0; j3 < maxColI; j3++) {
+  const minColI = SQUARE_WIDTH * Math.floor(j / SQUARE_WIDTH);
+  for (let i3 = minRowI; i3 < SQUARE_WIDTH; i3++) {
+    for (let j3 = minColI; j3 < SQUARE_WIDTH; j3++) {
       if (i3 !== i && j3 !== j) {
         constraintIndexes.push([i3, j3]);
       }
@@ -94,46 +94,45 @@ function addConstraint(board: TBoard, i: number, j: number): TBoard {
 
 //Lolo
 function initConstraints(board: TBoard): TBoard {
-    let res = board;
-    for (let i = 0; i < board.length; i++) {
-      for (let j = 0; j < board[0].length; j++) {
-        res = addConstraint(res, i, j);
-      }
+  let res = board;
+  for (let i = 0; i < board.length; i++) {
+    for (let j = 0; j < board[0].length; j++) {
+      res = addConstraint(res, i, j);
     }
-    return res;
+  }
+  return res;
 }
-  
-
 
 //Elmo
 function findGuarantee(board: TBoard): TBoard | boolean {
-
-    let nullFound = false; 
-    for (let i = 0; i < board.length; i++) {
-        for (let j = 0; j < board.length; j++) {
-            if (board[i][j] == null) {
-                nullFound = true;
-                const guarantee = checkGuarantee(board, i, j);
-                if (guarantee) {
-                    board[i][j].value = guarantee;
-                    const newBoard = addConstraint(board, i, j);
-                    return newBoard;
-                }
-            }
+  let nullFound = false;
+  for (let i = 0; i < board.length; i++) {
+    for (let j = 0; j < board.length; j++) {
+      if (board[i][j] == null) {
+        nullFound = true;
+        const guarantee = checkGuarantee(board, i, j);
+        if (guarantee) {
+          board[i][j].value = guarantee;
+          const newBoard = addConstraint(board, i, j);
+          return newBoard;
         }
+      }
     }
+  }
 
-   return !nullFound;
+  return !nullFound;
 }
 
 //Elmo
 function checkGuarantee(board: TBoard, i: number, j: number): number | null {
-    const guarantee = board[i][j].constraints.findIndex((c) => c === true)
-    const lastGuarantee = board[i][j].constraints.findLastIndex((c) => c === true)
+  const guarantee = board[i][j].constraints.findIndex((c) => c === true);
+  const lastGuarantee = board[i][j].constraints.findLastIndex(
+    (c) => c === true
+  );
 
-    if (guarantee === lastGuarantee) {
-        return guarantee + 1
-    } else {
-        return null;
-    }
+  if (guarantee === lastGuarantee) {
+    return guarantee + 1;
+  } else {
+    return null;
+  }
 }
