@@ -1,6 +1,6 @@
 export {};
-type TSquare = number | null;
-type TRow = TSquare[];
+type TCell = number | null;
+type TRow = TCell[];
 type TBoard = TRow[];
 function getColByIndex(i: number, board: TBoard): TRow {
   let c: TRow = [];
@@ -24,5 +24,7 @@ function isBoardValid(board: TBoard): boolean {
   }
   return true;
 }
+
+function getNeighbors(board: TBoard): boolean {}
 
 function solveBoard(board: TBoard): TBoard {}
