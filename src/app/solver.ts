@@ -27,29 +27,32 @@ function isBoardValid(board: TBoard): boolean {
   return true;
 }
 
-export function solveBoard(board: TBoard, updateUI: (board: TBoard) => void): TBoard {
-    let newBoard = initConstraints(board);
-    let solved = false;
-    // while (!solved) {
-    while (true) {
-        const result = findGuarantee(newBoard)
-        if (typeof result === 'boolean') {
-            if (result) {
-                updateUI(newBoard);
-                return newBoard;
-            } else {
-                throw new Error("No solution found!!");
-            }
-        }
-
-        if (result == newBoard) {
-            throw new Error("This bro tried to infinite loop");
-        }else {
-            console.log("WORKED")
-            updateUI(newBoard);
-            return newBoard
-        }
+export function solveBoard(
+  board: TBoard,
+  updateUI: (board: TBoard) => void
+): TBoard {
+  let newBoard = initConstraints(board);
+  let solved = false;
+  // while (!solved) {
+  while (true) {
+    const result = findGuarantee(newBoard);
+    if (typeof result === "boolean") {
+      if (result) {
+        updateUI(newBoard);
+        return newBoard;
+      } else {
+        throw new Error("No solution found!!");
+      }
     }
+
+    if (result == newBoard) {
+      throw new Error("This bro tried to infinite loop");
+    } else {
+      console.log("WORKED");
+      updateUI(newBoard);
+      return newBoard;
+    }
+  }
 }
 
 const BOARD_WIDTH = 9;
@@ -85,11 +88,18 @@ function getConstraintIndexes(i: number, j: number): [number, number][] {
 function addConstraint(board: TBoard, i: number, j: number): TBoard {
   let filledVal = board[i][j].value;
   if (filledVal) {
+    // add constraints for effective squares
     for (const constraintIndexes of getConstraintIndexes(i, j)) {
       if (board[constraintIndexes[0]][constraintIndexes[1]]) {
         board[constraintIndexes[0]][constraintIndexes[1]].constraints[
           filledVal - 1
         ] = false;
+      }
+    }
+    // add constraints for filled cell
+    for (let valI = 0; valI < BOARD_WIDTH; valI++) {
+      if (valI !== filledVal - 1) {
+        board[i][j].constraints[valI] = false;
       }
     }
   }
