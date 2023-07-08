@@ -84,10 +84,14 @@ function getConstraintIndexes(i: number, j: number): [number, number][] {
 //Chloe
 function addConstraint(board: TBoard, i: number, j: number): TBoard {
   let filledVal = board[i][j].value;
-  for (const constraintIndexes of getConstraintIndexes(i, j)) {
-    board[constraintIndexes[0]][constraintIndexes[1]].constraints[
-      filledVal as number
-    ] = false;
+  if (filledVal) {
+    for (const constraintIndexes of getConstraintIndexes(i, j)) {
+      if (board[constraintIndexes[0]][constraintIndexes[1]]) {
+        board[constraintIndexes[0]][constraintIndexes[1]].constraints[
+          filledVal
+        ] = false;
+      }
+    }
   }
   return board;
 }
