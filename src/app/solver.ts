@@ -122,7 +122,7 @@ function findGuarantee(board: TBoard): TBoard | boolean {
   let nullFound = false;
   for (let i = 0; i < board.length; i++) {
     for (let j = 0; j < board.length; j++) {
-      if (board[i][j] == null) {
+      if (board[i][j].value == null) {
         nullFound = true;
         const guarantee = checkGuarantee(board, i, j);
         if (guarantee) {
