@@ -2,10 +2,10 @@
 
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
-import { solveBoard } from './solver'
+import { TBoard, solveBoard } from './solver'
 
 export default function Home() {
-
+  const [lastChanged, setLastChanged] = useState<string | null>("0-1")
   const [board,setBoard] = useState<(number | null)[][]>([
     [
         null,
@@ -124,6 +124,24 @@ export default function Home() {
     board[row][col] = value
     setBoard([...board])
   }
+
+  const doSolveboard = () => {
+    let TBoardMap: TBoard = board.map((row, i) => row.map((cell, j) => ({ value: 2, constraints: [
+        true,true,true,true,true,true,true,true,true
+    ] })))
+
+    const finalBoard = solveBoard(TBoardMap, (tempBoard) => {
+        const tempBoardMap = tempBoard.map((row, i) => row.map((cell, j) => cell.value))
+        for (let i = 0; i < 9; i++) {
+            for (let j = 0; j < 9; j++) {
+                if (tempBoardMap[i][j] !== board[i][j]) {
+                    setLastChanged(`${i}-${j}`);
+                }
+            }
+        }
+        setBoard(tempBoardMap)
+    })
+  }
   
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -157,13 +175,15 @@ export default function Home() {
             {
                 board.map((row,y) => {
                     return row.map((item,x) => (
-                        <div key={`${x}-${y}`} className='board-item' contentEditable onInput={(e) => {
-                            const key = Number(e.nativeEvent.data)
+                        <div key={`${y}-${x}`} className='board-item' contentEditable onInput={(e) => {
+                            const key = Number((e.nativeEvent as any).data)
                             if (Number.isNaN(key) || key < 1 || key > 9) {
                                 setBoardCell(y,x,null)
                             }else {
                                 setBoardCell(y,x,key)
                             }
+                        }} style={{
+                            color: (`${y}-${x}` === lastChanged) ? 'red !important' : 'black',
                         }}>
                             {item}
                         </div>
@@ -208,11 +228,7 @@ export default function Home() {
         outline: "none",
         cursor: "pointer",
         padding: "10px 20px",
-      }} onClick={() => {
-        console.log(board)
-        const newBoard = solveBoard(board)
-        setBoard(newBoard)
-      }}>
+      }} onClick={doSolveboard}>
         Solve
       </button>
 
