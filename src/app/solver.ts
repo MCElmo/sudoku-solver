@@ -27,6 +27,35 @@ function isBoardValid(board: TBoard): boolean {
   return true;
 }
 
-function getNeighbors(board: TBoard): boolean {}
+function solveBoard(board: TBoard, updateUI: (board: TBoard) => void): TBoard {
+    let newBoard = initConstraints(board);
+    let solved = false;
+    // while (!solved) {
+    newBoard = findGuarantee(newBoard)
+    updateUI(newBoard);
+    // }
+    return newBoard
+}
 
-function solveBoard(board: TBoard): TBoard {}
+//Chloe
+function addConstraint(board: TBoard, i: number, j: number): TBoard {
+
+}
+
+//Lolo
+function initConstraints(board: TBoard): TBoard {
+
+}
+
+
+//Elmo
+function findGuarantee(board: TBoard): TBoard {
+
+}
+
+//Elmo
+function checkGuarantee(board: TBoard, i: number, j: number): TBoard {
+
+}
+
+

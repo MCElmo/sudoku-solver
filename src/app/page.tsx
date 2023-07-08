@@ -2,22 +2,123 @@
 
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
+import { solveBoard } from './solver'
 
 export default function Home() {
 
-  const [board,setBoard] = useState<(number | null)[][]>([[]])
+  const [board,setBoard] = useState<(number | null)[][]>([
+    [
+        null,
+        6,
+        null,
+        5,
+        null,
+        8,
+        3,
+        null,
+        null
+    ],
+    [
+        null,
+        null,
+        null,
+        7,
+        1,
+        null,
+        5,
+        null,
+        null
+    ],
+    [
+        null,
+        null,
+        9,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+    ],
+    [
+        2,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        1
+    ],
+    [
+        8,
+        null,
+        6,
+        null,
+        7,
+        null,
+        9,
+        5,
+        null
+    ],
+    [
+        null,
+        5,
+        1,
+        6,
+        null,
+        null,
+        null,
+        null,
+        8
+    ],
+    [
+        null,
+        null,
+        7,
+        null,
+        8,
+        null,
+        null,
+        4,
+        null
+    ],
+    [
+        null,
+        null,
+        3,
+        1,
+        null,
+        null,
+        null,
+        null,
+        null
+    ],
+    [
+        null,
+        9,
+        null,
+        null,
+        null,
+        3,
+        null,
+        2,
+        null
+    ]
+])
 
-  useEffect(() => {
-    let newBoard: number | null[][] = []
-    for (let i = 0; i < 9; i++) {
-        let row: number | null[] = []
-        for (let j = 0; j < 9; j++) {
-            row.push(null)
-        }
-        newBoard.push(row)
-    }
-    setBoard(newBoard)
-  },[])
+//   useEffect(() => {
+//     let newBoard: number | null[][] = []
+//     for (let i = 0; i < 9; i++) {
+//         let row: number | null[] = []
+//         for (let j = 0; j < 9; j++) {
+//             row.push(null)
+//         }
+//         newBoard.push(row)
+//     }
+//     setBoard(newBoard)
+//   },[])
 
   const setBoardCell = (row: number, col: number, value: number | null) => {
     board[row][col] = value
@@ -109,6 +210,8 @@ export default function Home() {
         padding: "10px 20px",
       }} onClick={() => {
         console.log(board)
+        const newBoard = solveBoard(board)
+        setBoard(newBoard)
       }}>
         Solve
       </button>
