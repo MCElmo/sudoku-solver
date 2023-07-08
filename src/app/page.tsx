@@ -126,7 +126,7 @@ export default function Home() {
   }
 
   const doSolveboard = () => {
-    let TBoardMap: TBoard = board.map((row, i) => row.map((cell, j) => ({ value: 2, constraints: [
+    let TBoardMap: TBoard = board.map((row, i) => row.map((cell, j) => ({ value: cell, constraints: [
         true,true,true,true,true,true,true,true,true
     ] })))
 
