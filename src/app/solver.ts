@@ -75,10 +75,10 @@ function getConstraintIndexes(i: number, j: number): [number, number][] {
   // add indexes in square
   const minRowI = SQUARE_WIDTH * Math.floor(i / SQUARE_WIDTH);
   const minColI = SQUARE_WIDTH * Math.floor(j / SQUARE_WIDTH);
-  for (let i3 = minRowI; i3 < SQUARE_WIDTH; i3++) {
-    for (let j3 = minColI; j3 < SQUARE_WIDTH; j3++) {
+  for (let i3 = 0; i3 < SQUARE_WIDTH; i3++) {
+    for (let j3 = 0; j3 < SQUARE_WIDTH; j3++) {
       if (i3 !== i && j3 !== j) {
-        constraintIndexes.push([i3, j3]);
+        constraintIndexes.push([i3 + minRowI, j3 + minColI]);
       }
     }
   }
@@ -145,7 +145,7 @@ function checkGuarantee(board: TBoard, i: number, j: number): number | null {
   );
 
   if (guarantee === lastGuarantee) {
-    console.log("FOUND GUARANTEE")
+    console.log("FOUND GUARANTEE");
     return guarantee + 1;
   } else {
     return null;
