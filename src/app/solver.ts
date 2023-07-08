@@ -131,6 +131,7 @@ function checkGuarantee(board: TBoard, i: number, j: number): number | null {
   );
 
   if (guarantee === lastGuarantee) {
+    console.log("FOUND GUARANTEE")
     return guarantee + 1;
   } else {
     return null;
