@@ -1,5 +1,7 @@
 export {};
-type TCell = number | null;
+
+type TCellValue = number | null;
+type TCell = { value: TCellValue; constraints: boolean[] };
 type TRow = TCell[];
 type TBoard = TRow[];
 function getColByIndex(i: number, board: TBoard): TRow {
