@@ -27,29 +27,29 @@ function isBoardValid(board: TBoard): boolean {
   return true;
 }
 
-export function solveBoard(
-  board: TBoard,
-  updateUI: (board: TBoard) => void
-): TBoard {
-  let newBoard = initConstraints(board);
-  let solved = false;
-  // while (!solved) {
-  while (true) {
-    const result = findGuarantee(newBoard);
-    if (typeof result === "boolean") {
-      if (result) {
-        updateUI(newBoard);
-        return newBoard;
-      } else {
-        throw new Error("No solution found!!");
-      }
-    }
+export function solveBoard(board: TBoard, updateUI: (board: TBoard) => void): TBoard {
+    let newBoard = initConstraints(board);
+    let solved = false;
+    // while (!solved) {
+    while (true) {
+        const result = findGuarantee(newBoard)
+        if (typeof result === 'boolean') {
+            if (result) {
+                updateUI(newBoard);
+                return newBoard;
+            } else {
+                throw new Error("No solution found!!");
+            }
+        }
 
-    if (result == newBoard) {
-      throw new Error("This bro tried to infinite loop");
+        if (result == newBoard) {
+            throw new Error("This bro tried to infinite loop");
+        }else {
+            console.log("WORKED")
+            updateUI(newBoard);
+            return newBoard
+        }
     }
-    updateUI(newBoard);
-  }
 }
 
 const BOARD_WIDTH = 9;
