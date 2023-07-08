@@ -88,7 +88,7 @@ function addConstraint(board: TBoard, i: number, j: number): TBoard {
     for (const constraintIndexes of getConstraintIndexes(i, j)) {
       if (board[constraintIndexes[0]][constraintIndexes[1]]) {
         board[constraintIndexes[0]][constraintIndexes[1]].constraints[
-          filledVal
+          filledVal - 1
         ] = false;
       }
     }
