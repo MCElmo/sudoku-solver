@@ -27,10 +27,10 @@ function isBoardValid(board: TBoard): boolean {
   return true;
 }
 
-export function solveBoard(
+export async function solveBoard(
   board: TBoard,
   updateUI: (board: TBoard) => void
-): TBoard {
+): Promise<TBoard> {
   let newBoard = initConstraints(board);
   let solved = false;
   // while (!solved) {
@@ -39,21 +39,18 @@ export function solveBoard(
     if (typeof result === "boolean") {
       if (result) {
         updateUI(newBoard);
-        return newBoard;
+        return newBoard
       } else {
         throw new Error("No solution found!!");
       }
-    }
-
-    if (result == newBoard) {
-      throw new Error("This bro tried to infinite loop");
     } else {
-      console.log("WORKED");
-      updateUI(newBoard);
-      return newBoard;
+        console.log("WORKED");
+        updateUI(newBoard);
+        await new Promise((resolve) => setTimeout(resolve, 50));
     }
   }
 }
+
 
 const BOARD_WIDTH = 9;
 const SQUARE_WIDTH = 3;
@@ -134,6 +131,12 @@ function findGuarantee(board: TBoard): TBoard | boolean {
     }
   }
 
+  if (nullFound) {
+    console.log(" No simple solutions, check boxes")
+    const result = checkBoxesAdvanced(board);
+    return result;
+  }
+
   return !nullFound;
 }
 
@@ -150,4 +153,47 @@ function checkGuarantee(board: TBoard, i: number, j: number): number | null {
   } else {
     return null;
   }
+}
+
+
+
+function checkBoxesAdvanced(board: TBoard ): TBoard | false {
+    for (let i = 0; i < BOARD_WIDTH; i++){
+        const result = checkBox(board, getIndexesForBox(i))
+        if (result) {
+            return result;
+        }
+    }
+    return false;
+}
+
+function getIndexesForBox(boxIndex: number): [number, number][] {
+    // Indexes for box i
+    let indexes: [number, number][] = []
+
+    // box 1 => 9 - 17
+    const start = 9 * boxIndex
+    const end = start + 9
+
+    for (let val = start; val < end; val++){
+        indexes.push([Math.floor(val / 3) % 9,(Math.floor(boxIndex/ 3) * 3) + (val % 3)])
+    }
+    return indexes
+}
+
+function checkBox(board: TBoard, indexes: [number, number][]): TBoard | false {
+    for (let val = 1; val < BOARD_WIDTH+1; val++) {
+        let possIndexes = []
+        for (let i = 0; i < indexes.length; i++) {
+            const boardCell = board[indexes[i][0]][indexes[i][1]]
+            if ( boardCell.value === val) break 
+            else if (boardCell.constraints[val-1]) possIndexes.push(indexes[i])
+        }
+        if (possIndexes.length === 1) {
+            board[possIndexes[0][0]][possIndexes[0][1]].value = val
+            const newBoard = addConstraint(board, possIndexes[0][0], possIndexes[0][1])
+            return newBoard
+        }
+    }
+    return false;
 }

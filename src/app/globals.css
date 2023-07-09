@@ -27,11 +27,11 @@
     width: calc(100% / 9);
     border: 1px solid rgba(0,0,0,0.2);
     aspect-ratio: 1 /1 ;
-    color: black;
     display: flex !important;
     justify-content: center!important;
     align-items: center;
     font-size: 40px;
+    transition: all 0.2s ease;
 }
 body {
   color: rgb(var(--foreground-rgb));

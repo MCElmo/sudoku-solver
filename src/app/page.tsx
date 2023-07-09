@@ -3,173 +3,92 @@
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { TBoard, solveBoard } from './solver'
+import confetti from "react-canvas-confetti"
 
 export default function Home() {
-  const [lastChanged, setLastChanged] = useState<string | null>("0-1")
-  const [board,setBoard] = useState<(number | null)[][]>([
-    [
-        null,
-        6,
-        null,
-        5,
-        null,
-        8,
-        3,
-        null,
-        null
-    ],
-    [
-        null,
-        null,
-        null,
-        7,
-        1,
-        null,
-        5,
-        null,
-        null
-    ],
-    [
-        null,
-        null,
-        9,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null
-    ],
-    [
-        2,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        1
-    ],
-    [
-        8,
-        null,
-        6,
-        null,
-        7,
-        null,
-        9,
-        5,
-        null
-    ],
-    [
-        null,
-        5,
-        1,
-        6,
-        null,
-        null,
-        null,
-        null,
-        8
-    ],
-    [
-        null,
-        null,
-        7,
-        null,
-        8,
-        null,
-        null,
-        4,
-        null
-    ],
-    [
-        null,
-        null,
-        3,
-        1,
-        null,
-        null,
-        null,
-        null,
-        null
-    ],
-    [
-        null,
-        9,
-        null,
-        null,
-        null,
-        3,
-        null,
-        2,
-        null
-    ]
-])
-
-//   useEffect(() => {
-//     let newBoard: number | null[][] = []
-//     for (let i = 0; i < 9; i++) {
-//         let row: number | null[] = []
-//         for (let j = 0; j < 9; j++) {
-//             row.push(null)
-//         }
-//         newBoard.push(row)
-//     }
-//     setBoard(newBoard)
-//   },[])
+  const [lastChanged, setLastChanged] = useState<number | null>(-1)
+  const [board,setBoard] = useState<(number | null)[][]>([])
+  const [savedBoard,setSaved] = useState<(number | null)[][]>([])
+  const [running,setRunning] = useState<boolean>(false)
+  useEffect(() => {
+    let newBoard: number | null[][] = []
+    for (let i = 0; i < 9; i++) {
+        let row: number | null[] = []
+        for (let j = 0; j < 9; j++) {
+            row.push(null)
+        }
+        newBoard.push(row)
+    }
+    setBoard(newBoard)
+  },[])
 
   const setBoardCell = (row: number, col: number, value: number | null) => {
     board[row][col] = value
     setBoard([...board])
   }
 
-  const doSolveboard = () => {
+  const doSolveboard = async () => {
+    if (running) {
+        return
+    }
+
+    setRunning(true)
     let TBoardMap: TBoard = board.map((row, i) => row.map((cell, j) => ({ value: cell, constraints: [
         true,true,true,true,true,true,true,true,true
     ] })))
 
-    const finalBoard = solveBoard(TBoardMap, (tempBoard) => {
-        const tempBoardMap = tempBoard.map((row, i) => row.map((cell, j) => cell.value))
-        for (let i = 0; i < 9; i++) {
-            for (let j = 0; j < 9; j++) {
-                if (tempBoardMap[i][j] !== board[i][j]) {
-                    setLastChanged(`${i}-${j}`);
+    setSaved([...board])
+
+    try {
+        
+        const finalBoard = await solveBoard(TBoardMap, (tempBoard) => {
+            const tempBoardMap = tempBoard.map((row, i) => row.map((cell, j) => cell.value))
+            setBoard((oldBoard) => {
+                for (let i = 0; i < 9; i++) {
+                    for (let j = 0; j < 9; j++) {
+                        if (tempBoardMap[i][j] !== oldBoard[i][j]) {
+                            setLastChanged(i * 9 + j);
+                        }
+                    }
                 }
-            }
-        }
-        setBoard(tempBoardMap)
+            return tempBoardMap
+        })
     })
+    console.log(finalBoard)
+    } catch (error) {
+        setRunning(false)
+    }
+
+
+    setRunning(false)
   }
   
+  console.log(lastChanged)
+
+  const getRandomColor = (number: number): string => {
+    const colors = [
+      '#FF0000', // red
+      '#00FF00', // green
+      '#0000FF', // blue
+      '#FFFF00', // yellow
+      '#FF00FF', // magenta
+      '#00FFFF', // cyan
+      '#FFA500', // orange
+      '#800080', // purple
+      '#008000'  // dark green
+    ];
+  
+    if (number < 1 || number > 9) {
+        console.log(number)
+        return colors[0]
+    //   throw new Error('Number must be between 1 and 9');
+    }
+  
+    const index = number - 1;
+    return colors[index];
+  }
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
       <div style={{ flex: 1, position: 'relative'}} className='z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex'>
         <div className='board'>
             {
@@ -182,8 +101,11 @@ export default function Home() {
                             }else {
                                 setBoardCell(y,x,key)
                             }
-                        }} style={{
-                            color: (`${y}-${x}` === lastChanged) ? 'red !important' : 'black',
+                        }} style={(lastChanged === y * 9 + x) ? {
+                            color: 'black',
+                            background: getRandomColor(item!),
+                        } : {
+                            color: 'black',
                         }}>
                             {item}
                         </div>
@@ -221,16 +143,33 @@ export default function Home() {
         </div>
       </div>
 
+            <div style={{display: "flex"}}>
+
       <button style={{
-        backgroundColor: "gold",
-        color: "white",
-        border: "none",
-        outline: "none",
-        cursor: "pointer",
-        padding: "10px 20px",
-      }} onClick={doSolveboard}>
+          backgroundColor: "gold",
+          color: "white",
+          border: "none",
+          outline: "none",
+          cursor: "pointer",
+          padding: "10px 20px",
+        }} onClick={doSolveboard} disabled={running}>
         Solve
       </button>
+
+      <button style={{
+          backgroundColor: "purple",
+          color: "white",
+          border: "none",
+          outline: "none",
+          cursor: "pointer",
+          padding: "10px 20px",
+          marginLeft: "10px",
+      }} onClick={() => {
+          setBoard(savedBoard)
+        }} disabled={running}>
+        Restart
+      </button>
+          </div>
 
     </main>
   )
