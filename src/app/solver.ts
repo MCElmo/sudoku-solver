@@ -39,18 +39,17 @@ export async function solveBoard(
     if (typeof result === "boolean") {
       if (result) {
         updateUI(newBoard);
-        return newBoard
+        return newBoard;
       } else {
         throw new Error("No solution found!!");
       }
     } else {
-        console.log("WORKED");
-        updateUI(newBoard);
-        await new Promise((resolve) => setTimeout(resolve, 50));
+      console.log("WORKED");
+      updateUI(newBoard);
+      await new Promise((resolve) => setTimeout(resolve, 50));
     }
   }
 }
-
 
 const BOARD_WIDTH = 9;
 const SQUARE_WIDTH = 3;
@@ -132,9 +131,21 @@ function findGuarantee(board: TBoard): TBoard | boolean {
   }
 
   if (nullFound) {
-    console.log(" No simple solutions, check boxes")
-    const result = checkBoxesAdvanced(board);
-    return result;
+    console.log(" No simple solutions, check boxes");
+    let result = checkBoxesAdvanced(board, getIndexesForBox);
+    if (result) {
+      return result;
+    }
+    console.log("No box solutions, check rows");
+    result = checkBoxesAdvanced(board, getIndexesForRow);
+    if (result) {
+      return result;
+    }
+    console.log("No row solutions, check columns");
+    result = checkBoxesAdvanced(board, getIndexesForCol);
+    if (result) {
+      return result;
+    }
   }
 
   return !nullFound;
@@ -155,45 +166,72 @@ function checkGuarantee(board: TBoard, i: number, j: number): number | null {
   }
 }
 
-
-
-function checkBoxesAdvanced(board: TBoard ): TBoard | false {
-    for (let i = 0; i < BOARD_WIDTH; i++){
-        const result = checkBox(board, getIndexesForBox(i))
-        if (result) {
-            return result;
-        }
+function checkBoxesAdvanced(
+  board: TBoard,
+  getIndexes: (arg0: number) => [number, number][]
+): TBoard | false {
+  for (let i = 0; i < BOARD_WIDTH; i++) {
+    const result = checkIndexes(board, getIndexes(i));
+    if (result) {
+      return result;
     }
-    return false;
+  }
+  return false;
 }
 
 function getIndexesForBox(boxIndex: number): [number, number][] {
-    // Indexes for box i
-    let indexes: [number, number][] = []
+  // Indexes for box i
+  let indexes: [number, number][] = [];
 
-    // box 1 => 9 - 17
-    const start = 9 * boxIndex
-    const end = start + 9
+  // box 1 => 9 - 17
+  const start = 9 * boxIndex;
+  const end = start + 9;
 
-    for (let val = start; val < end; val++){
-        indexes.push([Math.floor(val / 3) % 9,(Math.floor(boxIndex/ 3) * 3) + (val % 3)])
-    }
-    return indexes
+  for (let val = start; val < end; val++) {
+    indexes.push([
+      Math.floor(val / 3) % 9,
+      Math.floor(boxIndex / 3) * 3 + (val % 3),
+    ]);
+  }
+  return indexes;
 }
 
-function checkBox(board: TBoard, indexes: [number, number][]): TBoard | false {
-    for (let val = 1; val < BOARD_WIDTH+1; val++) {
-        let possIndexes = []
-        for (let i = 0; i < indexes.length; i++) {
-            const boardCell = board[indexes[i][0]][indexes[i][1]]
-            if ( boardCell.value === val) break 
-            else if (boardCell.constraints[val-1]) possIndexes.push(indexes[i])
-        }
-        if (possIndexes.length === 1) {
-            board[possIndexes[0][0]][possIndexes[0][1]].value = val
-            const newBoard = addConstraint(board, possIndexes[0][0], possIndexes[0][1])
-            return newBoard
-        }
+function getIndexesForCol(colIndex: number): [number, number][] {
+  let indexes: [number, number][] = [];
+  for (let rowIndex = 0; rowIndex < BOARD_WIDTH; rowIndex++) {
+    indexes.push([rowIndex, colIndex]);
+  }
+  return indexes;
+}
+
+function getIndexesForRow(rowIndex: number): [number, number][] {
+  let indexes: [number, number][] = [];
+  for (let colIndex = 0; colIndex < BOARD_WIDTH; colIndex++) {
+    indexes.push([rowIndex, colIndex]);
+  }
+  return indexes;
+}
+
+function checkIndexes(
+  board: TBoard,
+  indexes: [number, number][]
+): TBoard | false {
+  for (let val = 1; val < BOARD_WIDTH + 1; val++) {
+    let possIndexes = [];
+    for (let i = 0; i < indexes.length; i++) {
+      const boardCell = board[indexes[i][0]][indexes[i][1]];
+      if (boardCell.value === val) break;
+      else if (boardCell.constraints[val - 1]) possIndexes.push(indexes[i]);
     }
-    return false;
+    if (possIndexes.length === 1) {
+      board[possIndexes[0][0]][possIndexes[0][1]].value = val;
+      const newBoard = addConstraint(
+        board,
+        possIndexes[0][0],
+        possIndexes[0][1]
+      );
+      return newBoard;
+    }
+  }
+  return false;
 }
